@@ -1,4 +1,4 @@
-const CACHE_NAME = 'price-match-v6';
+const CACHE_NAME = 'price-match-v7';
 
 const ASSETS = [
   './',
