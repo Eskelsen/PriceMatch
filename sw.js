@@ -1,4 +1,4 @@
-const CACHE_NAME = 'price-match-v5';
+const CACHE_NAME = 'price-match-v6';
 
 const ASSETS = [
   './',
@@ -7,6 +7,7 @@ const ASSETS = [
   './appstore-images/price-match.png',
   './appstore-images/android/launchericon-192x192.png',
   './appstore-images/android/launchericon-512x512.png',
+  './appstore-images/maskable-512.png',
   './appstore-images/ios/180.png'
 ];
 

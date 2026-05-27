@@ -1,28 +1,30 @@
 {
   "name": "PriceMatch",
   "short_name": "PriceMatch",
-  "description": "Compare o custo-benefício de produtos pelo preço por unidade (g/ml).",
+  "description": "Compare o custo-benefício de produtos pelo preço por kg/L.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#fffdf5",
+  "background_color": "#fff5dd",
   "theme_color": "#fff5dd",
   "icons": [
     {
       "src": "./appstore-images/android/launchericon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "./appstore-images/android/launchericon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "./appstore-images/price-match.png",
-      "sizes": "any",
+      "src": "./appstore-images/maskable-512.png",
+      "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     }
   ]
 }
