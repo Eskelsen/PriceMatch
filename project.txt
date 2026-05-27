@@ -1,0 +1,21 @@
+# 18:54 26/05/2026 - Tuesday - São Paulo
+
+# PriceMatch
+
+Criar app para verificar custo benefício preço vs peso/quantidade.
+
+Campos: nome do produto, preço, peso/quantidade (g/ml) = razão/quociente (somente leitura)
+
+Cuidar de controlar a formatação com máscara para normalizar dados (a vírgula vira ponto pra padronizar e facilitar as frações)
+
+Manter em memória: registro de nome, preço, quantia (pensar em um nome bom que resuma tudo pra essa propriedade), razão/quociente (também pensar num nome)
+
+Escolha entre localStorage e IndexedDB
+
+Projeto referência: /home/consulting/works/outworks/archive/gradus/
+
+Os ícones para o PWA estão em appstore-images/
+
+Coloque para rodar em php -S localhost:2727
+
+# ...

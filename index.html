@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#fff5dd">
+  <title>PriceMatch</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./appstore-images/price-match.png" type="image/png">
+  <link rel="apple-touch-icon" href="./appstore-images/ios/180.png">
+
+  <style>
+    :root {
+      --ink: #3a2410;
+      --muted: #8a6f55;
+      --panel: rgba(255, 255, 255, 0.9);
+      --line: rgba(58, 36, 16, 0.12);
+      --accent: #f58b1f;
+      --accent-warm: #f5b12c;
+      --accent-soft: #fff5dd;
+      --gold: #c98a08;
+      --shadow: 0 24px 70px rgba(245, 139, 31, 0.20);
+    }
+
+    * { box-sizing: border-box; }
+    html { min-height: 100%; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100svh;
+      padding: 20px;
+      display: grid;
+      place-items: start center;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(245, 177, 44, 0.28), transparent 32rem),
+        radial-gradient(circle at bottom right, rgba(245, 139, 31, 0.20), transparent 28rem),
+        linear-gradient(145deg, #fff8e0 0%, #fffdf5 48%, #fff2d0 100%);
+    }
+
+    button, input { font: inherit; }
+
+    .app { width: min(100%, 460px); position: relative; }
+
+    .container {
+      width: 100%;
+      padding: 24px;
+      overflow: hidden;
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.78);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+    .brand-icon {
+      width: 64px; height: 64px; flex: 0 0 auto;
+      padding: 5px; border-radius: 22px; background: #fff;
+      box-shadow: 0 14px 32px rgba(245, 177, 44, 0.28);
+    }
+    .brand-icon img {
+      width: 100%; height: 100%; display: block;
+      border-radius: 18px; object-fit: cover;
+    }
+    .brand .back {
+      width: 44px; height: 44px; flex: 0 0 auto;
+      padding: 0; line-height: 1; font-size: 22px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 160ms ease, transform 160ms ease;
+    }
+    .brand .back:hover { border-color: rgba(245, 139, 31, 0.45); }
+    .brand .back:active { transform: scale(0.96); }
+
+    h1 { margin: 0; font-size: clamp(32px, 9vw, 46px); line-height: 0.98; letter-spacing: 0; }
+    .brand--detail h1 { font-size: clamp(24px, 6.5vw, 32px); overflow-wrap: anywhere; }
+    .subtitle { margin: 6px 0 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
+
+    .form { display: grid; gap: 14px; margin-top: 18px; }
+    .field { display: grid; gap: 8px; min-width: 0; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    label {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      font-size: 14px; font-weight: 700; color: var(--ink);
+    }
+    label span { color: var(--muted); font-size: 12px; font-weight: 650; }
+
+    input {
+      width: 100%; min-height: 56px; padding: 14px 16px; font-size: 16px;
+      color: var(--ink); background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--line); border-radius: 16px; outline: none;
+      transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    }
+    input::placeholder { color: #b5a59d; }
+    input:focus {
+      border-color: rgba(245, 139, 31, 0.6);
+      box-shadow: 0 0 0 4px rgba(245, 177, 44, 0.18);
+      transform: translateY(-1px);
+    }
+
+    .output {
+      margin-top: 14px; min-height: 86px;
+      display: grid; align-content: center; gap: 7px; padding: 16px;
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid var(--line); border-radius: 18px;
+    }
+    .output strong {
+      display: flex; align-items: center; gap: 8px;
+      color: var(--muted); font-size: 12px; line-height: 1.2;
+      text-transform: uppercase; letter-spacing: 0;
+    }
+    .output strong::before {
+      content: ""; width: 9px; height: 9px; flex: 0 0 auto;
+      border-radius: 999px; background: var(--accent);
+    }
+    .output span {
+      display: block; min-height: 32px; font-size: clamp(25px, 7vw, 34px);
+      font-weight: 800; line-height: 1; color: var(--ink); overflow-wrap: anywhere;
+    }
+
+    .actions { display: flex; gap: 10px; margin-top: 14px; }
+
+    button.save {
+      flex: 1; min-height: 56px; padding: 14px 16px;
+      font-size: 16px; font-weight: 700; color: #fff;
+      background: linear-gradient(135deg, var(--accent-warm) 0%, var(--accent) 100%);
+      border: none; border-radius: 16px; cursor: pointer;
+      transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+      box-shadow: 0 14px 32px rgba(245, 139, 31, 0.32);
+    }
+    button.save:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+    button.save:not(:disabled):active { transform: translateY(1px); }
+
+    .records { margin-top: 22px; display: grid; gap: 10px; }
+    .records-header {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 12px; color: var(--muted); font-weight: 700;
+      text-transform: uppercase; padding: 0 2px;
+    }
+    .records-header .count {
+      min-width: 22px; padding: 2px 8px; text-align: center;
+      background: rgba(245, 139, 31, 0.14); color: var(--accent);
+      border-radius: 999px; font-size: 11px;
+    }
+
+    /* Lista principal: um card por grupo (último item) */
+    button.group {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      column-gap: 12px; row-gap: 4px;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid var(--line); border-radius: 16px;
+      text-align: left; cursor: pointer; color: var(--ink);
+      transition: border-color 160ms ease, box-shadow 160ms ease, transform 120ms ease;
+    }
+    button.group:hover, button.group:focus-visible {
+      border-color: rgba(245, 139, 31, 0.45);
+      box-shadow: 0 6px 18px rgba(245, 139, 31, 0.18);
+      outline: none;
+    }
+    button.group:active { transform: scale(0.99); }
+
+    .group-name {
+      grid-column: 1; grid-row: 1;
+      font-weight: 700; font-size: 16px; overflow-wrap: anywhere;
+    }
+    .group-chev {
+      grid-column: 2; grid-row: 1 / span 3;
+      align-self: center;
+      display: flex; align-items: center; gap: 6px;
+      color: var(--muted); font-size: 13px; font-weight: 700;
+    }
+    .group-chev .count {
+      min-width: 22px; padding: 2px 8px; text-align: center;
+      background: rgba(245, 139, 31, 0.14); color: var(--accent);
+      border-radius: 999px; font-size: 11px;
+    }
+    .group-meta {
+      grid-column: 1; grid-row: 2;
+      font-size: 12px; color: var(--muted);
+    }
+    .group-unit {
+      grid-column: 1; grid-row: 3;
+      font-weight: 800; font-size: 15px; color: var(--ink);
+    }
+
+    /* Detalhe: itens dentro do grupo */
+    .itens { display: grid; gap: 10px; margin-top: 18px; }
+
+    .item {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      column-gap: 12px; row-gap: 4px;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid var(--line); border-radius: 16px;
+      align-items: center;
+    }
+    .item.best {
+      border-color: rgba(245, 177, 44, 0.7);
+      background: rgba(245, 177, 44, 0.14);
+      box-shadow: 0 6px 18px rgba(245, 177, 44, 0.22);
+    }
+    .item .item-name {
+      grid-column: 1; grid-row: 1;
+      font-weight: 700; font-size: 16px; overflow-wrap: anywhere;
+    }
+    .item .item-unit {
+      grid-column: 2; grid-row: 1;
+      font-weight: 800; font-size: 16px; text-align: right; white-space: nowrap;
+    }
+    .item .item-meta {
+      grid-column: 1 / span 2; grid-row: 2;
+      font-size: 12px; color: var(--muted);
+    }
+    .item .item-badge {
+      grid-column: 1 / span 2; grid-row: 3;
+      font-size: 11px; color: var(--gold); font-weight: 700; text-transform: uppercase;
+    }
+    .item button.remove {
+      grid-column: 3; grid-row: 1 / -1;
+      width: 34px; height: 34px; padding: 0; line-height: 1; font-size: 20px;
+      color: var(--muted); background: transparent;
+      border: 1px solid var(--line); border-radius: 10px; cursor: pointer;
+      align-self: center;
+      transition: color 160ms ease, border-color 160ms ease;
+    }
+    .item button.remove:hover { color: var(--accent); border-color: rgba(245, 139, 31, 0.45); }
+
+    .empty {
+      text-align: center; padding: 22px 12px;
+      color: var(--muted); font-size: 13px;
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px dashed var(--line); border-radius: 16px;
+    }
+
+    [hidden] { display: none !important; }
+
+    @media (min-width: 700px) {
+      body { padding: 32px; }
+      .container { padding: 30px; }
+    }
+
+    @media (max-width: 380px) {
+      body { padding: 12px; }
+      .container { padding: 18px; border-radius: 22px; }
+      .brand { gap: 12px; }
+      .brand-icon { width: 56px; height: 56px; border-radius: 18px; }
+      .output { min-height: 78px; padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<main class="app" aria-label="PriceMatch">
+
+  <!-- LISTA -->
+  <div class="container" id="viewList">
+    <header class="brand">
+      <div class="brand-icon" aria-hidden="true">
+        <img src="./appstore-images/price-match.png" alt="">
+      </div>
+      <div>
+        <h1>PriceMatch</h1>
+        <p class="subtitle">Veja o preço real do produto em R$ por kg/L — como nas etiquetas de mercado.</p>
+      </div>
+    </header>
+
+    <form id="form" novalidate>
+      <section class="form" aria-label="Dados do produto">
+        <div class="field">
+          <label for="nome">
+            Produto
+            <span>nome</span>
+          </label>
+          <input type="text" id="nome" placeholder="Ex: Arroz tipo 1" autocomplete="off" required>
+        </div>
+
+        <div class="field">
+          <label for="estabelecimento">
+            Estabelecimento
+            <span>onde</span>
+          </label>
+          <input type="text" id="estabelecimento" placeholder="Ex: Carrefour" autocomplete="off" list="estabelecimentos" required>
+          <datalist id="estabelecimentos"></datalist>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="preco">
+              Preço
+              <span>R$</span>
+            </label>
+            <input type="text" id="preco" placeholder="Ex: 24,90" inputmode="decimal" autocomplete="off" required>
+          </div>
+
+          <div class="field">
+            <label for="medida">
+              Medida
+              <span>g ou ml</span>
+            </label>
+            <input type="text" id="medida" placeholder="Ex: 5000" inputmode="decimal" autocomplete="off" required>
+          </div>
+        </div>
+      </section>
+
+      <div class="output">
+        <strong>Preço por kg/L</strong>
+        <span id="precoUnitario">—</span>
+      </div>
+
+      <div class="actions">
+        <button class="save" id="salvar" type="submit" disabled>Salvar</button>
+      </div>
+    </form>
+
+    <section class="records" aria-label="Produtos salvos">
+      <div class="records-header">
+        <span>Produtos</span>
+        <span class="count" id="contadorGrupos">0</span>
+      </div>
+      <div id="lista"></div>
+    </section>
+  </div>
+
+  <!-- DETALHE -->
+  <div class="container" id="viewDetail" hidden>
+    <header class="brand brand--detail">
+      <button class="back" id="voltar" type="button" aria-label="Voltar">←</button>
+      <div>
+        <h1 id="grupoNome"></h1>
+        <p class="subtitle" id="grupoSub"></p>
+      </div>
+    </header>
+    <div class="itens" id="grupoItens"></div>
+  </div>
+
+</main>
+
+<script>
+  const STORAGE_KEY = 'price-match:records';
+
+  const $ = (id) => document.getElementById(id);
+  const els = {
+    form: $('form'),
+    nome: $('nome'),
+    estabelecimento: $('estabelecimento'),
+    preco: $('preco'),
+    medida: $('medida'),
+    precoUnitario: $('precoUnitario'),
+    salvar: $('salvar'),
+    datalist: $('estabelecimentos'),
+    viewList: $('viewList'),
+    lista: $('lista'),
+    contadorGrupos: $('contadorGrupos'),
+    viewDetail: $('viewDetail'),
+    voltar: $('voltar'),
+    grupoNome: $('grupoNome'),
+    grupoSub: $('grupoSub'),
+    grupoItens: $('grupoItens'),
+  };
+
+  // chave de agrupamento (só identifica, nunca é exibida)
+  function chaveDe(nome) {
+    return nome.trim().toLowerCase();
+  }
+
+  function parseDecimal(raw) {
+    if (raw == null) return NaN;
+    const s = String(raw).trim().replace(',', '.');
+    if (s === '') return NaN;
+    return parseFloat(s);
+  }
+
+  function aplicarMascaraDecimal(input) {
+    const valor = input.value;
+    let limpo = valor.replace(',', '.').replace(/[^0-9.]/g, '');
+    const partes = limpo.split('.');
+    if (partes.length > 2) limpo = partes[0] + '.' + partes.slice(1).join('');
+    if (limpo !== valor) input.value = limpo;
+  }
+
+  function formatarPreco(v) {
+    return v.toLocaleString('pt-BR', {
+      style: 'currency', currency: 'BRL',
+      minimumFractionDigits: 2, maximumFractionDigits: 4
+    });
+  }
+  function formatarPrecoUnitario(v) {
+    // v armazenado em R$/(g·ml); exibido em R$/(kg·L) — multiplicador 1000.
+    const porKgL = v * 1000;
+    const formatado = porKgL.toLocaleString('pt-BR', {
+      style: 'currency', currency: 'BRL',
+      minimumFractionDigits: 2, maximumFractionDigits: 2
+    });
+    return `${formatado} / kg·L`;
+  }
+  function formatarMedida(v) { return v.toLocaleString('pt-BR', { maximumFractionDigits: 3 }); }
+  function escapar(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function carregar() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr : [];
+    } catch (e) { return []; }
+  }
+  function persistir(registros) { localStorage.setItem(STORAGE_KEY, JSON.stringify(registros)); }
+
+  function gruposOrdenados() {
+    const map = new Map();
+    for (const r of carregar()) {
+      const k = chaveDe(r.nome);
+      if (!map.has(k)) map.set(k, { chave: k, items: [] });
+      map.get(k).items.push(r);
+    }
+    const grupos = [];
+    for (const g of map.values()) {
+      g.items.sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
+      g.nome = g.items[0].nome;           // casing da entrada mais recente
+      g.ultimoEm = g.items[0].criadoEm || 0;
+      grupos.push(g);
+    }
+    grupos.sort((a, b) => b.ultimoEm - a.ultimoEm);
+    return grupos;
+  }
+
+  function calcularPreview() {
+    const preco = parseDecimal(els.preco.value);
+    const medida = parseDecimal(els.medida.value);
+    const nomeOk = els.nome.value.trim().length > 0;
+    const estOk = els.estabelecimento.value.trim().length > 0;
+
+    if (isNaN(preco) || isNaN(medida) || preco <= 0 || medida <= 0) {
+      els.precoUnitario.textContent = '—';
+      els.salvar.disabled = true;
+      return null;
+    }
+    const precoUnitario = preco / medida;
+    els.precoUnitario.textContent = formatarPrecoUnitario(precoUnitario);
+    els.salvar.disabled = !(nomeOk && estOk);
+    return { preco, medida, precoUnitario };
+  }
+
+  function salvar() {
+    const calc = calcularPreview();
+    if (!calc) return;
+    const nome = els.nome.value.trim();
+    const estabelecimento = els.estabelecimento.value.trim();
+    if (!nome || !estabelecimento) return;
+
+    const registros = carregar();
+    registros.push({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      nome,
+      estabelecimento,
+      preco: calc.preco,
+      medida: calc.medida,
+      precoUnitario: calc.precoUnitario,
+      criadoEm: Date.now()
+    });
+    persistir(registros);
+
+    els.nome.value = '';
+    els.estabelecimento.value = '';
+    els.preco.value = '';
+    els.medida.value = '';
+    els.precoUnitario.textContent = '—';
+    els.salvar.disabled = true;
+    els.nome.focus();
+
+    renderizar();
+  }
+
+  function remover(id) {
+    persistir(carregar().filter(r => r.id !== id));
+    renderizar();
+  }
+
+  function atualizarDatalist() {
+    const set = new Set();
+    for (const r of carregar()) {
+      const e = (r.estabelecimento || '').trim();
+      if (e) set.add(e);
+    }
+    const opcoes = [...set].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+    els.datalist.innerHTML = opcoes.map(e => `<option value="${escapar(e)}"></option>`).join('');
+  }
+
+  // Rota baseada em hash (#produto/<chave>)
+  function rotaAtual() {
+    const m = location.hash.match(/^#produto\/(.+)$/);
+    if (m) return { view: 'detail', chave: decodeURIComponent(m[1]) };
+    return { view: 'list' };
+  }
+  function abrirGrupo(chave) {
+    location.hash = '#produto/' + encodeURIComponent(chave);
+  }
+  function voltarLista() {
+    if (location.hash) history.back();
+    else renderizar();
+  }
+
+  function renderizar() {
+    atualizarDatalist();
+    const rota = rotaAtual();
+    const grupos = gruposOrdenados();
+
+    if (rota.view === 'detail') {
+      const g = grupos.find(g => g.chave === rota.chave);
+      if (!g) { history.replaceState(null, '', location.pathname + location.search); renderizar(); return; }
+      els.viewList.hidden = true;
+      els.viewDetail.hidden = false;
+      renderDetalhe(g);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    } else {
+      els.viewList.hidden = false;
+      els.viewDetail.hidden = true;
+      renderLista(grupos);
+    }
+  }
+
+  function renderLista(grupos) {
+    els.contadorGrupos.textContent = grupos.length;
+    if (grupos.length === 0) {
+      els.lista.innerHTML = '<div class="empty">Nenhum produto salvo ainda. Preencha os campos e toque em Salvar.</div>';
+      return;
+    }
+    els.lista.innerHTML = grupos.map(g => {
+      const ultimo = g.items[0];
+      return `
+        <button class="group" type="button" data-chave="${escapar(g.chave)}" aria-label="Ver ${escapar(g.nome)}">
+          <div class="group-name">${escapar(g.nome)}</div>
+          <div class="group-chev"><span class="count">${g.items.length}</span><span>›</span></div>
+          <div class="group-meta">${escapar(ultimo.estabelecimento || '—')} · ${formatarPreco(ultimo.preco)} · ${formatarMedida(ultimo.medida)} g/ml</div>
+          <div class="group-unit">${formatarPrecoUnitario(ultimo.precoUnitario)}</div>
+        </button>
+      `;
+    }).join('');
+  }
+
+  function renderDetalhe(g) {
+    els.grupoNome.textContent = g.nome;
+    els.grupoSub.textContent = `${g.items.length} ${g.items.length === 1 ? 'registro' : 'registros'}`;
+
+    const ordenado = [...g.items].sort((a, b) => a.precoUnitario - b.precoUnitario);
+    const melhor = ordenado[0].precoUnitario;
+    const showBest = ordenado.length > 1;
+
+    els.grupoItens.innerHTML = ordenado.map(r => {
+      const isBest = showBest && r.precoUnitario === melhor;
+      return `
+        <div class="item${isBest ? ' best' : ''}">
+          <div class="item-name">${escapar(r.estabelecimento || '—')}</div>
+          <div class="item-unit">${formatarPrecoUnitario(r.precoUnitario)}</div>
+          <div class="item-meta">${formatarPreco(r.preco)} · ${formatarMedida(r.medida)} g/ml</div>
+          ${isBest ? '<div class="item-badge">melhor custo</div>' : ''}
+          <button class="remove" type="button" data-id="${escapar(r.id)}" aria-label="Remover">×</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Listeners
+  els.preco.addEventListener('input', () => { aplicarMascaraDecimal(els.preco); calcularPreview(); });
+  els.medida.addEventListener('input', () => { aplicarMascaraDecimal(els.medida); calcularPreview(); });
+  els.nome.addEventListener('input', calcularPreview);
+  els.estabelecimento.addEventListener('input', calcularPreview);
+
+  els.form.addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    if (els.salvar.disabled) return;
+    salvar();
+  });
+
+  els.lista.addEventListener('click', (ev) => {
+    const g = ev.target.closest('button.group');
+    if (!g) return;
+    abrirGrupo(g.dataset.chave);
+  });
+
+  els.grupoItens.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('button.remove');
+    if (!btn) return;
+    remover(btn.dataset.id);
+  });
+
+  els.voltar.addEventListener('click', voltarLista);
+
+  window.addEventListener('hashchange', renderizar);
+  window.addEventListener('popstate', renderizar);
+
+  renderizar();
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+</script>
+
+</body>
+</html>
